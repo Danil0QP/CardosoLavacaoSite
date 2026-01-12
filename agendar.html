@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=
+    , initial-scale=1.0">
+    <title>Cardoso Lavação</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+
+<body>
+    <h1>Agendamento de horário</h1>
+    <input type="text" placeholder="Placa do veículo">
+    <input type="date" placeholder="DD/MM/AAAA">
+    <input type="time" placeholder="HH:MM:SS">
+    <button onclick="mostrarToast()" type="button" class="btn btn-success">Salvar</button>
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#CancelarAgendamento">Cancelar</button>
+    <i class="bi bi-house" data-bs-toggle="modal" data-bs-target="#PaginaInicial"></i>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="SalvarAgendamento" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <img src="..." class="rounded me-2" alt="...">
+                <strong class="me-auto">Cardoso Lavação</strong>
+                <small>11 mins ago</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Obrigado. Agendamento salvo com sucesso!
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="CancelarAgendamento" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Tem certeza que deseja cancelar o agendamento?
+                    </h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Caso o agendamento ser cancelado, as modificações não serão salvas!
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Não</button>
+                    <button type="button" class="btn btn-primary"
+                        onclick="window.location.href='index.html'">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="PaginaInicial" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Tem certeza que deseja sair do agendamento?
+                    </h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Caso sair, as modificações não serão salvas!
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Não</button>
+                    <button type="button" class="btn btn-primary"
+                        onclick="window.location.href='index.html'">Sair</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+    <script>
+        function mostrarToast() {
+            const toastEl = document.getElementById('SalvarAgendamento');
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
