@@ -22,3 +22,32 @@ header a:hover {
     text-decoration: none;
     font-weight: 500;
 }
+
+.link-cadastro {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.link-cadastro:hover {
+    color: rgb(7, 3, 253);
+    text-decoration: underline;
+}
+
+.modal-content {
+    background: rgb(4, 4, 177);
+}
+
+.modal-content h1 {
+    color: #ddd;
+    font-weight: 800;
+}
+
+.modal-content p {
+    color: #ddd;
+}
+
+.modal-content label {
+    color: #ddd;
+}
