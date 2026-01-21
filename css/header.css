@@ -51,3 +51,7 @@ header a:hover {
 .modal-content label {
     color: #ddd;
 }
+
+.modal-body p {
+    color: #ddd;
+}

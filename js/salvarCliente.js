@@ -44,19 +44,20 @@ function salvarCliente() {
 
             mostrarToast("Cadastro salvo com sucesso!");
 
-            document.getElementById("nome").value = "";
-            document.getElementById("cpf-cadastro").value = "";
-            document.getElementById("numero-telefone").value = "";
-            document.getElementById("nome-carro").value = "";
-            document.getElementById("marca-carro").value = "";
-            document.getElementById("placa-carro").value = "";
-            document.getElementById("senha-cadastro").value = "";
+            const modalEl = document.getElementById("CriarCadastro");
+            const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+            modal.hide();
+
+            setTimeout(() => {
+                window.location.href = "index.html";
+            }, 1000);
         })
         .catch(error => {
             console.error(error);
             mostrarToast("Erro ao salvar cadastro");
         });
 }
+
 //Função para salvar Login.
 document.getElementById("salvarLogin")?.addEventListener("click", login);
 
@@ -73,4 +74,19 @@ function login() {
     }
 
     mostrarToast("Login realizado com Sucesso!");
+}
+
+//Função para validação da senha, se a confirmação != Senha aparece a mensagem.
+function validarSenha() {
+    const senha = document.getElementById("senha-cadastro").value;
+    const confirmaSenha = document.getElementById("confirmar-senha").value;
+    const erro = document.getElementById("erroSenha");
+
+    if(senha !== confirmaSenha) {
+        erro.textContent = "As senhas não conferem!";
+        return false;
+    }
+
+    erro.textContent = "";
+    salvarCliente();
 }

@@ -24,7 +24,7 @@
                             data-bs-target="#CriarCadastro">Criar cadastro</a></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                    <button id="cancelarLogin" type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="cancelarLogin()">Cancelar</button>
                     <button type="button" id="salvarLogin" class="btn btn-success">Acessar</button>
                 </div>
             </div>
@@ -59,10 +59,11 @@
                     <input type="text" id="placa-carro">
                     <p>Senha:</p>
                     <input type="password" id="senha-cadastro" placeholder="Insira sua senha.">
-                    <input type="password" placeholder="Confirme a sua senha.">
+                    <input type="password" id="confirmar-senha" placeholder="Confirme a sua senha.">
+                    <p id="erroSenha" style="color:red"></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                    <button id="cancelarCadastro" type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="cancelarCadastro()">Cancelar</button>
                     <button type="button" id="salvarCadastro" class="btn btn-success">Salvar</button>
                 </div>
             </div>
@@ -79,6 +80,26 @@
             </div>
             <div class="toast-body">
 
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="CancelarAgendamento" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Tem certeza que deseja cancelar o agendamento?
+                    </h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Caso o agendamento ser cancelado, as modificações não serão salvas!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Não</button>
+                    <button id="confirmarCancelamento" type="button" class="btn btn-success">Confirmar</button>
+                </div>
             </div>
         </div>
     </div>
