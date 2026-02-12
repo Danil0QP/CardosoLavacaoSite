@@ -1,0 +1,21 @@
+body{
+    background-color: rgb(0, 11, 77);
+}
+
+p{
+    text-align: center;
+    font-family: 'Poppins', Arial, sans-serif;
+    font-size: 20px;
+    font-weight: 200;
+    line-height: 1.7;
+    color: #a3a3a3;
+    margin-bottom: 15px;
+}
+
+.botoes{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
