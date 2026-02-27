@@ -1,0 +1,55 @@
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    gap: 15px;
+    background-color: #00122a;
+}
+
+.logo-empresa{
+    flex: 1;
+    max-width: 500px;
+}
+
+.logo-empresa img{
+    width: 100%;
+    height: auto;
+}
+
+.texto-login{
+    flex: 1;
+    background-color: #001f62;
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px #001f6a;
+    font-family: Arial, Helvetica, sans-serif;
+    font: bold;
+    color: darkseagreen;
+    max-width: 500px;
+}
+
+.texto-login p{
+    font-size: 25px;
+}
+
+.texto-login input{
+    width: 80%;
+    max-width: 300px;
+    height: 50px;
+}
+
+.texto-login button{
+    width: 50%;
+    top: 15px;
+    max-width: 300px;
+    position: relative;
+    height: 50px;
+    color: darkseagreen;
+    background-color: rgb(2, 18, 253);
+}
+
+.texto-login a{
+    color: white;
+}

@@ -3,7 +3,7 @@ header.navbar {
     top: 0;
     left: 0;
     z-index: 999;
-    background-color: rgb(0, 0, 0);
+    background-color: #000528;
     padding: 5px;
 }
 
@@ -22,40 +22,10 @@ header a:hover {
     color: #fff;
 }
 
-.btn-link {
-    text-decoration: none;
-    font-weight: 500;
+#acessarLogin {
+    margin-left: auto;
 }
 
-.link-cadastro {
-    color: #ffffff;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 12px;
-}
-
-.link-cadastro:hover {
-    color: rgb(7, 3, 253);
-    text-decoration: underline;
-}
-
-.modal-content {
-    background: rgb(4, 4, 177);
-}
-
-.modal-content h1 {
-    color: #ddd;
-    font-weight: 800;
-}
-
-.modal-content p {
-    color: #ddd;
-}
-
-.modal-content label {
-    color: #ddd;
-}
-
-.modal-body p {
-    color: #ddd;
+#linkLogin {
+    padding: 5px 30px;
 }
