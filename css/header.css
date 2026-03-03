@@ -5,6 +5,8 @@ header.navbar {
     z-index: 999;
     background-color: #000528;
     padding: 5px;
+    justify-content: center;
+    align-items: center;
 }
 
 .navbar-brand {
@@ -13,19 +15,77 @@ header.navbar {
     color: #fff;
 }
 
-header a {
-    color: #ddd;
-    margin-left: 15px;
+.navbar a {
+    color: darkseagreen;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+    text-decoration: none;
+    margin-inline-start: auto;
+    font-size: 15px;
+    margin: 0 auto;
 }
 
-header a:hover {
-    color: #fff;
+.menu {
+    margin: 0 auto;
+    list-style: none;
+}
+
+.dropdown {
+    font-weight: bold;
+    position: relative;
+    cursor: pointer;
+    color: darkseagreen;
+}
+
+.submenu {
+    font-weight: bold;
+    display: none;
+    position: absolute;
+    color: darkseagreen;
+    background-color: #000528;
+    padding: 10px;
+    list-style: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.submenu li {
+    padding: 5px 10px;
+}
+
+.submenu li:hover {
+    background-color: #eee;
+}
+
+.dropdown:hover .submenu {
+    display: block;
+}
+
+.dropdown-item #logoWhatsapp {
+    margin-right: 10px;
 }
 
 #acessarLogin {
+    background-color: #001f62;
+    border: none;
     margin-left: auto;
+    margin-right: auto;
 }
 
+#acessarLogin a {
+    font-size: 15px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    text-decoration: none;
+    color: #000528;
+    justify-content: center;
+    align-items: center;
+}
+
+#sair {
+    margin-top: center;
+    color: #001f62;
+    font-size: x-large;
+}
 #linkLogin {
     padding: 5px 30px;
 }
