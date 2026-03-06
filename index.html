@@ -10,20 +10,139 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/style.css">
-    
+    <link rel="stylesheet" href="css/agendar.css">
+    <link rel="stylesheet" href="css/agendamento.css">
+
 </head>
 
 <body>
     <div id="header"></div>
-    <p>Trabalhamos com lavação em geral, Higienização interna e Polimento</p>
-    <p>Agende seu horário!</p>
-    <div class="botoes">
-        <a href="agendar.html" title="Agendar horário"><button type="button"
-                class="btn btn-secondary">Agendar</button></a>
-        <a href="agendamento.html" title="Ver agendamento"><button type="button" class="btn btn-secondary">Ver
-                agendamento</button></a>
-        <a href="tabela-preco.html"><button type="button" class="btn btn-primary">Ver tabela de preços</button></a>
-    </div>
+    <section>
+        <div class="sobre">
+            <h1>QUEM SOMOS!</h1>
+            <h3>A Cardoso Lavação está no ramo automotivo voltado para limpeza geral e detalhada desde Fevereiro de
+                2024, a
+                empresa está sempre focada em evoluir profissionalmente podendo trazer mais confiança e qualidade em
+                seus
+                serviços prestados ao veículo. Pois para nós não se trata apenas de meios de locomoção, se trata de
+                bem-estar ao cliente, envolvendo sensação de carro novo quando for embarcar!
+            </h3>
+        </div>
+        <h1 id="titulo-carrossel">Trabalhos já feitos</h1>
+        <div id="carousel-servicos" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="imagens/servicos/audi.jpeg" class="d-block w-100" alt="adui">
+                </div>
+                <div class="carousel-item">
+                    <img src="imagens/servicos/corolla.jpeg" class="d-block w-100" alt="corolla">
+                </div>
+                <div class="carousel-item">
+                    <img src="imagens/servicos/hillux.jpeg" class="d-block w-100" alt="hillux">
+                </div>
+                <div class="carousel-item">
+                    <img src="imagens/servicos/jeep.jpeg" class="d-block w-100" alt="jeepRenegade">
+                </div>
+                <div class="carousel-item">
+                    <img src="imagens/servicos/jetta.jpeg" class="d-block w-100" alt="jetta">
+                </div>
+                <div class="carousel-item">
+                    <img src="imagens/servicos/sandero.jpeg" class="d-block w-100" alt="sandero-novo">
+                </div>
+                <div class="carousel-item">
+                    <img src="imagens/servicos/sandero2.jpeg" class="d-block w-100" alt="sandero-antigo">
+                </div>
+                <div class="carousel-item">
+                    <img src="imagens/servicos/ka.jpeg" class="d-block w-100" alt="ka">
+                </div>
+                <div class="carousel-item">
+                    <img src="imagens/servicos/etios.jpeg" class="d-block w-100" alt="etios">
+                </div>
+                <div class="carousel-item">
+                    <img src="imagens/servicos/corsa.jpeg" class="d-block w-100" alt="corsa">
+                </div>
+                <div class="carousel-item">
+                    <img src="imagens/servicos/corsa-wd.jpeg" class="d-block w-100" alt="corsa-wind">
+                </div>
+                <div class="carousel-item">
+                    <img src="imagens/servicos/cg-preta.jpeg" class="d-block w-100" alt="cg-preta">
+                </div>
+                <div class="carousel-item">
+                    <img src="imagens/servicos/cg-prata.jpeg" class="d-block w-100" alt="cg-prata">
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carousel-servicos"
+                data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carousel-servicos"
+                data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+        </div>
+    </section>
+    <section class="agendamento">
+        <h1>Agendamento de horários</h1>
+        <div>
+            <select name="escolha-carro" id="opcao-carro">
+                <option value="">Escolha o carro</option>
+                <option value="1">carro</option>
+            </select>
+            <input id="data" type="date" placeholder="DD/MM/AAAA">
+            <input id="hora" type="time" placeholder="HH:MM:SS">
+            <select name="plano-lavacao" id="opcao-plano">
+                <option value="">Selecione um plano</option>
+                <option value="1">Semanal</option>
+                <option value="2">Mensal</option>
+            </select>
+            <select name="escolha-servico" id="opcao-servico">
+                <option value="">Escolha um serviço</option>
+                <option value="1">Simples R$50</option>
+                <option value="2">Simples R$70</option>
+                <option value="3">Simples R$60</option>
+                <option value="4">Simples R$150</option>
+                <option value="5">Simples R$210</option>
+                <option value="6">Simples R$180</option>
+                <option value="7">Com cera R$100</option>
+                <option value="8">Com cera R$130</option>
+                <option value="9">Com cera R$120</option>
+                <option value="10">Com cera R$200</option>
+                <option value="11">Com cera R$270</option>
+                <option value="12">Com cera R$240</option>
+            </select>
+
+            <div class="buttons">
+                <button id="confirmaAgendamento" type="button" class="btn btn-success">Agendar</button>
+                <button id="cancelaAgendamento" type="button" class="btn btn-danger">Cancelar</button>
+            </div>
+        </div>
+    </section>
+    <section>
+        <table class="tabela">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nome</th>
+                    <th scope="col">Dia</th>
+                    <th scope="col">Hora</th>
+                    <th scope="col">Serviço</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Ações</th>
+                </tr>
+            </thead>
+            <tbody id="tabela-agendamento">
+                <tr>
+                    <td>teste</td>
+                    <td>teste</td>
+                    <td>teste</td>
+                    <td>teste</td>
+                    <td>teste</td>
+                    <td>teste</td>
+                    <td>
+                        <a href="" title="Alterar"><i class="bi bi-pen"></i></a>
+                        <a href="" title="Cancelar"><i class="bi bi-x-circle"></i></a>
+                    </td>
+                </tr>
+            </tbody>
+
+        </table>
+    </section>
 
 
 

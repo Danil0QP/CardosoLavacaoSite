@@ -1,0 +1,24 @@
+.agendamento {
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    margin-top: 55px;
+}
+
+.agendamento h1{
+    display: grid;
+    justify-content: center;
+    align-items: center;
+}
+
+.buttons {
+    display: flex;
+    margin: 15px 0 45px 0;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+
+
+

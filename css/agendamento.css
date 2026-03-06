@@ -1,0 +1,30 @@
+.tabela {
+    border-radius: 15px;
+    width: 100%;
+    border-collapse: collapse;
+    overflow: hidden;
+    text-align: center;
+}
+
+thead {
+    background-color: #001f62;    
+    color: darkseagreen;
+}
+
+th, td{
+    padding: 12px;
+    border: 1px solid #ccc;
+}
+
+tbody tr:nth-child(even){
+    background-color: #000528;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: #001f62;
+}
+
+tbody tr:hover {
+    color: darkblue;
+    background-color: cornflowerblue;
+}

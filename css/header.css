@@ -1,4 +1,5 @@
 header.navbar {
+    position: fixed;
     width: 100%;
     top: 0;
     left: 0;
@@ -60,7 +61,11 @@ header.navbar {
     display: block;
 }
 
-.dropdown-item #logoWhatsapp {
+.submenu #logoWhatsapp {
+    margin-right: 10px;
+}
+
+.submenu #logoInstagram {
     margin-right: 10px;
 }
 
