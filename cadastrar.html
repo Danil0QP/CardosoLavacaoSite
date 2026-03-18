@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="css/cadastrar.css">
+</head>
+
+<body>
+    <div class="logo-empresa"><img src="imagens/LogoCardosoCorrigido.png" alt="Logo empresa"></div>
+    <div class="cadastro">
+        <h1>Seja bem-vindo</h1>
+        <h2>Criar cadastro!</h2>
+        <p>Nome:</p>
+        <input type="text" id="cadastro-nome" placeholder="Ex: Seu nome completo">
+        <p>Data de Nascimento</p>
+        <input type="date" id="cadastro-data-nascimento" placeholder="Ex: DD/MM/AAAA">
+        <p>Número de Telefone:</p>
+        <input type="number" id="cadastro-telefone" placeholder="Ex: (48)9 9999-9999">
+        <p>CPF:</p>
+        <input type="text" id="cadastro-cpf" placeholder="Ex: 123.456.789-00">
+        <p>Marca:</p>
+        <input type="text" id="cadastro-marca-carro" placeholder="Ex: Adicione a marca do carro">
+        <p>Carro:</p>
+        <input type="text" id="cadastro-nome-carro" placeholder="Ex: Adicione o nome do carro">
+        <p>Placa:</p>
+        <input type="text" id="cadastro-placa-do-carro" placeholder="Ex: Placa do carro">
+        <div class="mercosul">
+            <span>Mercosul:</span>
+            <label class="switch">
+                <input type="checkbox">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <p>Senha:</p>
+        <input type="password" id="login-senha" placeholder="Insira sua senha aqui.">
+
+        <button id="botao-acesso" onclick="validar()">Criar</button>
+        <p class="acessar-conta">Já possui uma conta? <a href="/login.html">Acessar conta</a></p>
+    </div>
+</body>
+
+
+<script src="js/login.js" defer></script>
+
+</html>

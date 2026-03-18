@@ -2,6 +2,7 @@ body {
     padding-top: 60px;
     background-color: #001f62;
     color: darkseagreen;
+    scroll-behavior: smooth;
 }
 
 .sobre {
