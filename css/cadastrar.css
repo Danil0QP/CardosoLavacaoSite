@@ -41,6 +41,10 @@ body{
     height: 15px;
 }
 
+input.erro {
+    border: 2px solid red;
+}
+
 .cadastro button{
     width: 50%;
     top: 35px;
@@ -61,7 +65,7 @@ body{
    margin: 40px;
 }
 
-.mercosul {
+.switch-mercosul {
     display: flex;
     align-items: center;
     font-size: 18px;
