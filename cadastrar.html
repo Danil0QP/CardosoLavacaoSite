@@ -39,10 +39,16 @@
             <input type="text" id="cadastro-placa-do-carro" aria-describedby="erro-placa">
             <small id="erro-placa" style="color:red; display: none;"></small>
             <p>Senha:</p>
-            <input type="password" id="login-senha" placeholder="Insira sua senha aqui." autocomplete="new-password">
+            <input type="password" id="cadastro-senha" placeholder="Insira sua senha aqui." autocomplete="new-password" required minlength="8">
+            <small id="erro-senha" style="color: red; display: none;"></small>
+            <p>Confirmar sua senha</p>
+            <input type="password" id="confirma-senha" placeholder="Insira a senha novamente.">
+            <small id="erro-confirma-senha" style="color: red; display: none;"></small>
             <button type="submit" id="botao-acesso">Criar</button>
             <p class="acessar-conta">Já possui uma conta? <a href="/login.html">Acessar conta</a></p>
         </div>
+
+        <span id="erro-geral" style="color: red;"></span>
     </form>
 </body>
 

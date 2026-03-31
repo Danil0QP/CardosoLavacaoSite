@@ -1,3 +1,31 @@
+document.addEventListener("DOMContentLoaded", function() {
+    atualizarHeader();
+});
+
+function loginSucesso (nomeCompleto){
+    //Pega apenas o primeiro nome do cliente
+    const primeiroNome = nomeCompleto.split(" ")[0];
+
+    //Salva o nome no navegador, (Brevemente irá ser atualizado para utilização de cookies)
+    localStorage.setItem("nome", primeiroNome);
+    
+    atualizarHeader();
+}
+
+function atualizarHeader(){
+    const nome = localStorage.getItem("nome");
+    const areaUsuario = document.getElementById("area-usuario");
+
+    if (nome){
+        areaUsuario.innerHTML = `<span class="nome-usuario"> Olá, ${nome}</span>`;
+    }
+}
+
+function logout() {
+    localStorage.removeItem("nome");
+    location.reload();
+}
+
 fetch("components/header.html")
 .then(response => response.text())
 .then(data => {
