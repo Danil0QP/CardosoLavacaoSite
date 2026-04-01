@@ -1,7 +1,3 @@
-document.addEventListener("DOMContentLoaded", function() {
-    atualizarHeader();
-});
-
 function loginSucesso (nomeCompleto){
     //Pega apenas o primeiro nome do cliente
     const primeiroNome = nomeCompleto.split(" ")[0];
@@ -15,6 +11,10 @@ function loginSucesso (nomeCompleto){
 function atualizarHeader(){
     const nome = localStorage.getItem("nome");
     const areaUsuario = document.getElementById("area-usuario");
+
+    if(!areaUsuario){
+        return;
+    }
 
     if (nome){
         areaUsuario.innerHTML = `<span class="nome-usuario"> Olá, ${nome}</span>`;
@@ -30,5 +30,6 @@ fetch("components/header.html")
 .then(response => response.text())
 .then(data => {
     document.getElementById("header").innerHTML = data;
+    atualizarHeader();
 })
 .catch(error => console.error("Erro ao carregar header:", error));

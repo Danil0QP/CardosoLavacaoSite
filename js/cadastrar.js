@@ -8,7 +8,13 @@ const erroSenha = document.getElementById("erro-senha");
 const erroConfSenha = document.getElementById("erro-confirma-senha");
 const erroGeral = document.getElementById("erro-geral");
 
+function salvarNomeUsuario(nomeCompleto){
+    const primeiroNome = nomeCompleto.trim().split(/\s+/)[0];
+    localStorage.setItem("nome", primeiroNome);
+}
+
 document.addEventListener("DOMContentLoaded", function () {
+
     //Regex para formatação do input
     const regexAntiga = /^[A-Z]{3}-\d{4}$/;
     const regexMercosul = /^[A-Z]{3}\d[A-J]\d{2}$/;
@@ -217,6 +223,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             const resultado = await response.json();
+            salvarNomeUsuario(resultado.nome || dados.nome);
             window.location.href = "index.html"
             
         } catch (error) {
