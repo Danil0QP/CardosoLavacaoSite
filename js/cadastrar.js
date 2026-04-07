@@ -208,7 +208,7 @@ document.addEventListener("DOMContentLoaded", function () {
         };
 
         try {
-            const response = await fetch("http://localhost:8080/cliente/criar-cliente", {
+            const response = await fetch("http://cardosolavacao.rf.gd/cliente/criar-cliente", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

@@ -5,12 +5,12 @@ const erroLogin = document.getElementById("erro-login");
 
 document.addEventListener("DOMContentLoaded", function () {
 
-    //Função para estiliar o CPF
+    // Função para estilizar o CPF
     function normalizaCpf(valor) {
         return valor.replace(/\D/g, "");
     }
 
-    //Função para mostrar mensagem de erro
+    // Função para mostrar mensagem de erro
     function mostraErroLogin(mensagem) {
         erroLogin.textContent = mensagem;
         erroLogin.style.display = "block";
@@ -21,13 +21,13 @@ document.addEventListener("DOMContentLoaded", function () {
         erroLogin.style.display = "none";
     }
 
-    //Função para salvar o login
+    // Função para salvar o login
     function salvarSessao(usuario) {
         const nomeCompleto = (usuario.nome || "").trim();
-        //Verificação para pegar o nome completo e salvar apenas o primeiro nome do cliente
+        // Verificação para pegar o nome completo e salvar apenas o primeiro nome do cliente
         const primeiroNome = nomeCompleto ? nomeCompleto.split(/\s+/)[0] : "";
 
-        //Verificações para armazenagem dos dados no local storage
+        // Verificações para armazenagem dos dados no local storage
         if (primeiroNome) {
             localStorage.setItem("nome", primeiroNome);
         }
@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
     async function autenticar(endpoint, payload) {
         const response = await fetch(endpoint, {
             method: "POST",
-            header: {
+            headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(payload)
@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return null;
         }
 
-        return response.json()
+        return response.json();
     }
 
     async function validar() {
@@ -69,7 +69,9 @@ document.addEventListener("DOMContentLoaded", function () {
         const payload = { cpf, senha };
         const endpoints = [
             "http://localhost:8080/auth/login",
-            "http://localhost:8080/login"
+            "http://localhost:8080/login",
+            "https://cardosolavacao.rf.gd/auth/login",
+            "https://cardosolavacao.rf.gd/login"
         ];
 
         let usuario = null;
@@ -83,21 +85,21 @@ document.addEventListener("DOMContentLoaded", function () {
             } catch (error) {
                 console.error(`Falha ao autenticar em ${endpoint}:`, error);
             }
-
-            if (!usuario) {
-                mostraErroLogin("CPF ou Senha inválidos.");
-                return;
-            }
-
-            salvarSessao(usuario);
-            window.location.href = "index.html";
         }
 
-        botaoAcesso.addEventListener("click", validar);
-        inputSenha.addEventListener("keydown", function (event) {
-            if (event.key === "Enter") {
-                validar();
-            }
-        })
+        if (!usuario) {
+            mostraErroLogin("CPF ou Senha inválidos.");
+            return;
+        }
+
+        salvarSessao(usuario);
+        window.location.href = "index.html";
     }
+
+    botaoAcesso.addEventListener("click", validar);
+    inputSenha.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+            validar();
+        }
+    });
 });

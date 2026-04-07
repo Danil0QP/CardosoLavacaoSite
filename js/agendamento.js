@@ -24,7 +24,7 @@ function buscarAgendamento() {
 }
 
 function mostrarAgendamento(lista) {
-    let tabela = document.getElementById("tabelaAgendamento");
+    let tabela = document.getElementById("tabela-agendamento");
     tabela.innerHTML = "";
 
     lista.forEach(agendamento => {
@@ -49,7 +49,7 @@ function mostrarAgendamento(lista) {
 function editar(id) {
     let novoStatus = prompt("Escolha o novo status: ");
 
-    fetch(`http://localhost:8080/agendamentos`)({
+    fetch(`http://localhost:8080/agendamentos/${id}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json"
