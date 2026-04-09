@@ -1,30 +1,12 @@
-.tabela {
-    border-radius: 15px;
-    width: 100%;
-    border-collapse: collapse;
-    overflow: hidden;
-    text-align: center;
-}
-
-thead {
-    background-color: #001f62;    
-    color: darkseagreen;
-}
-
-th, td{
-    padding: 12px;
-    border: 1px solid #ccc;
-}
-
-tbody tr:nth-child(even){
-    background-color: #000528;
-}
-
-tbody tr:nth-child(odd) {
+.agenndamento-filtros {
     background-color: #001f62;
+    border: 1px solid #123b99;
 }
 
-tbody tr:hover {
-    color: darkblue;
-    background-color: cornflowerblue;
+.agenndamento-filtros .form-label, .agenndamento-filtros #resumo-lista {
+    color: #e6f1ff;
+}
+
+.table td, .table th {
+    vertical-align: middle;
 }
