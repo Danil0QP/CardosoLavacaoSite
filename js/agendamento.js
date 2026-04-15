@@ -15,70 +15,76 @@ function configurarFiltros() {
     const botaoLimpar = document.getElementById("btn-limpar-filtro");
     const botaoAtualizar = document.getElementById("btn-atualizar");
 
+    if (!inputFiltro || !botaoLimpar || botaoAtualizar) {
+        return;
+    }
+
     inputFiltro.addEventListener("input", aplicarFiltros);
 
     botaoLimpar.addEventListener("click", () => {
         inputFiltro.value = "";
         aplicarFiltros();
-    })
+    });
 
     botaoAtualizar.addEventListener("click", carregarAgendamentos);
+}
 
-    async function carregarAgendamentos() {
-        const tipoUsuario = localStorage.getItem("tipoUsuario");
-        const clienteId = localStorage.getItem("clienteId");
+async function carregarAgendamentos() {
+    const tipoUsuario = localStorage.getItem("tipoUsuario");
+    const clienteId = localStorage.getItem("clienteId");
 
-        if (tipoUsuario !== "ADMIN" && !clienteId) {
-            mostrarResumo(0, 0, "Você precisa estar conectado para consultar seus agendamentos.");
-            mostrarAgendamento([]);
-            return;
-        }
-
-        const caminhos = tipoUsuario === "ADMIN" ? ["/listaAgendamentos", "/agendamento"] : [`/${clienteId}/agendamento`, `/clientes/${clienteId}/agendamentos`];
-
-        try {
-            listaCompletaAgendamento = await buscarEmEndpoits(caminhos);
-            aplicarFiltros();
-        } catch (error) {
-            console.error("Erro ao carregar os agendamentos: ", error);
-            mostrarResumo(0, 0, "Erro ao carregar os agendamentos no momento.");
-            mostrarAgendamento([]);
-        }
+    if (tipoUsuario !== "ADMIN" && !clienteId) {
+        mostrarResumo(0, 0, "Você precisa estar conectado para consultar seus agendamentos.");
+        mostrarAgendamento([]);
+        return;
     }
 
-    async function buscarEmEndpoits(caminhos) {
-        const urls = [];
+    const caminhos = tipoUsuario === "ADMIN" ? ["/listaAgendamentos", "/agendamento"] : [`/${clienteId}/agendamento`, `/clientes/${clienteId}/agendamentos`];
 
-        caminhos.forEach((caminho) => {
-            URL_BASE_API.forEach((baseUrl) => {
-                urls.push(`${baseUrl}${caminho}`);
-            });
-        });
-
-        let ultimoErro = null;
-
-        for (const url of urls) {
-            try {
-                const response = await fetch(url);
-
-                if (!response.ok) {
-                    continue;
-                }
-
-                const data = await response.json();
-                if (Array.isArray(data)) {
-                    return data;
-                }
-            } catch (error) {
-                ultimoErro = error;
-            }
-        }
-
-        throw ultimoErro || new Error("Nenhum endpoint retornou dados válidos.");
+    try {
+        listaCompletaAgendamento = await buscarEmEndpoits(caminhos);
+        aplicarFiltros();
+    } catch (error) {
+        console.error("Erro ao carregar os agendamentos: ", error);
+        mostrarResumo(0, 0, "Erro ao carregar os agendamentos no momento.");
+        mostrarAgendamento([]);
     }
 }
 
+async function buscarEmEndpoits(caminhos) {
+    const urls = [];
+
+    caminhos.forEach((caminho) => {
+        URL_BASE_API.forEach((baseUrl) => {
+            urls.push(`${baseUrl}${caminho}`);
+        });
+    });
+
+    let ultimoErro = null;
+
+    for (const url of urls) {
+        try {
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                continue;
+            }
+
+            const data = await response.json();
+            if (Array.isArray(data)) {
+                return data;
+            }
+        } catch (error) {
+            ultimoErro = error;
+        }
+    }
+
+    throw ultimoErro || new Error("Nenhum endpoint retornou dados válidos.");
+}
+
+
 function aplicarFiltros() {
+    const inputFiltro = document.getElementById("filtro-cliente");
     const termo = (document.getElementById("filtro-cliente").value || "").trim().toLowerCase();
 
     const listaFiltrada = listaCompletaAgendamento.filter((agendamento) => {
@@ -96,6 +102,9 @@ function aplicarFiltros() {
 
 function mostrarResumo(totalFiltrado, totalGeral, mensagem = "") {
     const resumo = document.getElementById("resumo-lista");
+    if (!resumo) {
+        return;
+    }
     if (mensagem) {
         resumo.textContent = mensagem;
         return;
@@ -107,8 +116,12 @@ function mostrarResumo(totalFiltrado, totalGeral, mensagem = "") {
 function mostrarAgendamento(lista) {
     const tabela = document.getElementById("tabela-agendamento");
 
+    if(!tabela) {
+        return;
+    }
+
     if (!Array.isArray(lista) || lista.length === 0) {
-        tabela.innerHTML = "<tr><td colspan='7'>Nenhum agenndamento encontrado.</td></tr>"
+        tabela.innerHTML = "<tr><td colspan='7'>Nenhum agendamento encontrado.</td></tr>";
         return;
     }
 
@@ -118,14 +131,14 @@ function mostrarAgendamento(lista) {
         <td>${agendamento.nomeCliente ?? "-"}</td>
         <td>${agendamento.dia ?? "-"}</td>
         <td>${agendamento.hora ?? "-"}</td>
-        <td>${agendamento.serviço ?? "-"}</td>
-        <td>${agendamento.status ?? "-"}</td>
+        <td>${agendamento.serviço || agendamento.nomeServico || "-"}</td>
+        <td>${agendamento.statusAgendamento ?? "-"}</td>
         <td>
-            <button class="btn btn-sm btn-outline-info me-1" onclick="editar(${agendamento.id}) title="Editar status"><i class="bi bi-pen></i></button>
-            <button class="btn btn-sm btn-outline-danger" onclick="cancelar(${agendamento.id})" title="Cancelar"><i class="bi bi-x-circle"></i></button>
+            <button class="btn btn-sm btn-outline-primary" onclick="editarAgendamento(${agendamento.id}) title="Editar status"><i class="bi bi-pen></i></button>
+            <button class="btn btn-sm btn-outline-danger" onclick="deletarAgendamento(${agendamento.id})" title="Cancelar"><i class="bi bi-x-circle"></i></button>
         </td>
-    </tr>`
-    ).join("");
+    </tr>
+    `).join("");
 
     tabela.innerHTML = html;
 }
@@ -153,20 +166,44 @@ function editar(id) {
 
 }
 
-function cancelar(id) {
-    if (!confirm("Deseja realmente cancelar o agendamento?")) {
+async function deletarAgendamento(id) {
+    if (!confirm("Tem certeza que deseja excluir este agendamento?")) {
         return;
     }
 
-    fetch(`http://localhost:8080/agendamento/${id}`, {
-        method: "DELETE"
-    })
-        .then((response) => {
-            if (response.ok) {
-                alert(`Agendamento cancelado com sucesso ${id}!`);
-                carregarAgendamentos();
-            } else {
-                alert("Erro ao cancelar agendamento!");
+    const rotas = [
+        `/${id}/agendamento`,
+        `/agendamento/${id}`
+    ];
+
+    let excluido = false;
+
+    for (const rota of rotas) {
+        for (const baseUrl of URL_BASE_API) {
+            try {
+                const response = await fetch(`${baseUrl}${rota}`, {
+                    method: "DELETE"
+                });
+
+                if (response.ok) {
+                    excluido = true;
+                    break;
+                }
+            } catch (error) {
+                // tenta próxima URL
             }
-        });
+        }
+
+        if (excluido) {
+            break;
+        }
+    }
+
+    if (!excluido) {
+        alert("Não foi possível excluir o agendamento no momento.");
+        return;
+    }
+
+    listaCompletaAgendamento = listaCompletaAgendamento.filter((item) => item.id !== id);
+    aplicarFiltros();
 }
