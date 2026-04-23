@@ -8,7 +8,7 @@ const erroSenha = document.getElementById("erro-senha");
 const erroConfSenha = document.getElementById("erro-confirma-senha");
 const erroGeral = document.getElementById("erro-geral");
 const cpf = document.getElementById("cadastro-cpf");
-const erroCpf = document.getElementById("erro-senha");
+const erroCpf = document.getElementById("erro-cpf");
 
 function salvarNomeUsuario(nomeCompleto) {
     const primeiroNome = nomeCompleto.trim().split(/\s+/)[0];
@@ -92,6 +92,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const regexMercosul = /^[A-Z]{3}\d[A-J]\d{2}$/;
     const regexSenha = /^.{8,}$/; //faz com que a senha tenha no mínimo 8 caracteres
 
+    cpf.addEventListener("blur", () => {
+        validarCpf();
+    });
+
+    cpf.addEventListener("focus", () => {
+        limparErroCpf();
+    });
+
     //Validação para alterar o tipo de placa do input, Mercosul (ABC1D23) Padrão (ABC-1234)
     switchPlaca.addEventListener("change", () => {
         cadastroPlaca.value = "";
@@ -126,6 +134,35 @@ document.addEventListener("DOMContentLoaded", function () {
     cadastroPlaca.addEventListener("focus", () => {
         limparErroPlaca();
     });
+
+    function mostraErroCpf(mensagem) {
+        erroCpf.textContent = mensagem;
+        erroCpf.style.display = "block";
+        cpf.classList.add("erro");
+    }
+
+    function limparErroCpf() {
+        erroCpf.textContent = "";
+        erroCpf.style.display = "none";
+        cpf.classList.remove("erro");
+    }
+
+    function validarCpf() {
+        const cpfDigitado = cpf.value.trim();
+
+        if (!cpfDigitado) {
+            mostraErroCpf("O CPF é obrigatório!");
+            return false;
+        }
+
+        if (!validaCPF(cpfDigitado)) {
+            mostraErroCpf("CPF inválido. Verifique e tente novamente.");
+            return false;
+        }
+
+        limparErroCpf();
+        return true;
+    }
 
     //Função para mostrar o erro no input para cadastrar a placa
     function mostraErro(mensagem) {
@@ -262,15 +299,17 @@ document.addEventListener("DOMContentLoaded", function () {
     form.addEventListener("submit", async function (e) {
         e.preventDefault();
         //Bloqueia o envio do formulário caso falte alguma informação.
-        if (!validarPlaca() || !validarSenha() || !validarConfSenha()) {
+        if (!validaCPF || !validarPlaca() || !validarSenha() || !validarConfSenha()) {
             return;
         }
+
+        const cpfSemFormato = document.getElementById("cadastro-cpf").value.replace(/\D/g, "");
 
         const dados = {
             nome: document.getElementById("cadastro-nome").value,
             dataNascimento: document.getElementById("cadastro-data-nascimento").value,
             telefone: document.getElementById("cadastro-telefone").value,
-            cpf: document.getElementById("cadastro-cpf").value,
+            cpf: cpfSemFormato,
             marca: document.getElementById("cadastro-marca-carro").value,
             nomeCarro: document.getElementById("cadastro-nome-carro").value,
             mercosul: document.getElementById("switch-placa").checked,
