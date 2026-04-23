@@ -37,6 +37,22 @@ document.addEventListener("DOMContentLoaded", function () {
         if (usuario.tipoUsuario) {
             localStorage.setItem("tipoUsuario", usuario.tipoUsuario);
         }
+
+        const marcaCarro = usuario.marca || usuario.marcaCarro || "";
+        const nomeCarro = usuario.nomeCarro || usuario.carro || "";
+        const placaCarro = usuario.placa || usuario.placaCarro || "";
+
+        if (marcaCarro) {
+            localStorage.setItem("marcaCarro", marcaCarro);
+        }
+
+        if (nomeCarro) {
+            localStorage.setItem("nomeCarro", nomeCarro);
+        }
+
+        if (placaCarro) {
+            localStorage.setItem("placaCarro", placaCarro);
+        }
     }
 
     async function autenticar(endpoint, payload) {

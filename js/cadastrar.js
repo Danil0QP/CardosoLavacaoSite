@@ -7,13 +7,85 @@ const confirmaSenha = document.getElementById("confirma-senha");
 const erroSenha = document.getElementById("erro-senha");
 const erroConfSenha = document.getElementById("erro-confirma-senha");
 const erroGeral = document.getElementById("erro-geral");
+const cpf = document.getElementById("cadastro-cpf");
+const erroCpf = document.getElementById("erro-senha");
 
-function salvarNomeUsuario(nomeCompleto){
+function salvarNomeUsuario(nomeCompleto) {
     const primeiroNome = nomeCompleto.trim().split(/\s+/)[0];
     localStorage.setItem("nome", primeiroNome);
 }
 
+//Função criada para incluir máscara ao digitar o CPF incluir automáticamente o "." e "-"
+cpf.addEventListener("input", function(){
+    let cpf = this.value.replace(/\D/g, "")
+
+    cpf = cpf.replace(/(\d{3})(\d)/, "$1.$2")
+    cpf = cpf.replace(/(\d{3})(\d)/, "$1.$2")
+    cpf = cpf.replace(/(\d{3})(\d{1,2})$/, "$1-$2")
+
+    this.value = cpf
+
+})
+
 document.addEventListener("DOMContentLoaded", function () {
+
+    //Função para validação do CPF digitado
+    function validaCPF(cpf) {
+        var Soma = 0
+        var Resto
+
+        var strCPF = String(cpf).replace(/[^\d]/g, '')
+
+        //Validação para estipular tamanho do CPF com 11 digitos
+        if (strCPF.length !== 11)
+            return false
+
+        //Impede usuário digitar CPF com números repetidos
+        if ([
+            '00000000000',
+            '11111111111',
+            '22222222222',
+            '33333333333',
+            '44444444444',
+            '55555555555',
+            '66666666666',
+            '77777777777',
+            '88888888888',
+            '99999999999',
+        ].indexOf(strCPF) !== -1)
+            return false
+
+        //FOR feito para verificar o digito verificador do CPF se é válido
+        for (i = 1; i <= 9; i++)
+            Soma = Soma + parseInt(strCPF.substring(i - 1, i)) * (11 - i);
+
+        Resto = (Soma * 10) % 11
+
+        //Se o dígito for válido cai nessa verificação 
+        if ((Resto == 10) || (Resto == 11))
+            Resto = 0
+
+        //Se o dígito NÃO for válido cai nessa verificação
+        if (Resto != parseInt(strCPF.substring(9, 10)))
+            return false
+
+        Soma = 0
+
+        //Verificação para caso o Dígito passe nas verificações anteriores, Aqui verifica o dígito 11 do CPF
+        for (i = 1; i <= 10; i++)
+            Soma = Soma + parseInt(strCPF.substring(i - 1, i)) * (12 - i)
+
+        Resto = (Soma * 10) % 11
+
+        //Mesmas verificações que antes.
+        if ((Resto == 10) || (Resto == 11))
+            Resto = 0
+
+        if (Resto != parseInt(strCPF.substring(10, 11)))
+            return false
+
+        return true
+    }
 
     //Regex para formatação do input
     const regexAntiga = /^[A-Z]{3}-\d{4}$/;
@@ -34,7 +106,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // //Máscara para quando o switch estiver marcado ou não.
+    //Máscara para quando o switch estiver marcado ou não.
     cadastroPlaca.addEventListener("input", () => {
         let value = cadastroPlaca.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
 
@@ -216,7 +288,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 body: JSON.stringify(dados)
             });
 
-            if (!response.ok){
+            if (!response.ok) {
                 const texto = await response.text();
                 console.error("Erro: ", response.status, texto);
                 throw new Error("Erro na requisição");
@@ -224,8 +296,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const resultado = await response.json();
             salvarNomeUsuario(resultado.nome || dados.nome);
+            localStorage.setItem("marcaCarro", dados.marca || "");
+            localStorage.setItem("nomeCarro", dados.nomeCarro || "");
+            localStorage.setItem("placaCarro", dados.placa || "");
             window.location.href = "index.html"
-            
+
         } catch (error) {
             erroGeral.textContent = "Erro ao conectar ao servidor!";
             console.error(error);

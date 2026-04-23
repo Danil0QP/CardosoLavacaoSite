@@ -23,7 +23,8 @@
             <p>Número de Telefone:</p>
             <input type="number" id="cadastro-telefone" placeholder="Ex: (48)9 9999-9999">
             <p>CPF:</p>
-            <input type="text" id="cadastro-cpf" placeholder="Ex: 123.456.789-00">
+            <input type="text" id="cadastro-cpf" maxlength="14" placeholder="Ex: 123.456.789-00">
+            <small id="erro-cpf" style="color: red; display: none;"></small>
             <p>Marca:</p>
             <input type="text" id="cadastro-marca-carro" placeholder="Ex: Adicione a marca do carro">
             <p>Carro:</p>
@@ -39,7 +40,8 @@
             <input type="text" id="cadastro-placa-do-carro" aria-describedby="erro-placa">
             <small id="erro-placa" style="color:red; display: none;"></small>
             <p>Senha:</p>
-            <input type="password" id="cadastro-senha" placeholder="Insira sua senha aqui." autocomplete="new-password" required minlength="8">
+            <input type="password" id="cadastro-senha" placeholder="Insira sua senha aqui." autocomplete="new-password"
+                required minlength="8">
             <small id="erro-senha" style="color: red; display: none;"></small>
             <p>Confirmar sua senha</p>
             <input type="password" id="confirma-senha" placeholder="Insira a senha novamente.">
