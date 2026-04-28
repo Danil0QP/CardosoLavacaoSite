@@ -9,14 +9,34 @@ const erroConfSenha = document.getElementById("erro-confirma-senha");
 const erroGeral = document.getElementById("erro-geral");
 const cpf = document.getElementById("cadastro-cpf");
 const erroCpf = document.getElementById("erro-cpf");
+const telefone = document.getElementById("cadastro-telefone");
+const erroTelefone = document.getElementById("erro-telefone");
 
 function salvarNomeUsuario(nomeCompleto) {
     const primeiroNome = nomeCompleto.trim().split(/\s+/)[0];
     localStorage.setItem("nome", primeiroNome);
 }
 
+
+telefone.addEventListener("input", function () {
+    let telefone = this.value.replace(/\D/g, "")
+
+    if (telefone.length > 11)
+        telefone = telefone.slice(0, 11);
+
+    if (telefone.length <= 10) {
+        telefone = telefone.replace(/^(\d{2})(\d)/g, "($1) $2");
+        telefone = telefone.replace(/(\d{4})(\d)/, "$1-$2");
+    } else {
+        telefone = telefone.replace(/^(\d{2})(\d)/g, "($1) $2");
+        telefone = telefone.replace(/(\d{5})(\d)/, "$1-$2");
+    }
+
+    this.value = telefone;
+});
+
 //Função criada para incluir máscara ao digitar o CPF incluir automáticamente o "." e "-"
-cpf.addEventListener("input", function(){
+cpf.addEventListener("input", function () {
     let cpf = this.value.replace(/\D/g, "")
 
     cpf = cpf.replace(/(\d{3})(\d)/, "$1.$2")
@@ -29,8 +49,59 @@ cpf.addEventListener("input", function(){
 
 document.addEventListener("DOMContentLoaded", function () {
 
+    //Váriavel para armazenagem de DDDs válidos para cada estado.
+    const DDD_VALIDOS = new Set([
+        11, 12, 13, 14, 15, 16, 17, 18, 19,
+        21, 22, 24, 27, 28,
+        31, 32, 33, 34, 35, 37, 38,
+        41, 42, 43, 44, 45, 46,
+        47, 48, 49,
+        51, 53, 54, 55,
+        61, 62, 63, 64, 65, 66, 67, 68, 69,
+        71, 73, 74, 75, 77, 79,
+        81, 82, 83, 84, 85, 86, 87, 88, 89,
+        91, 92, 93, 94, 95, 96, 97, 98, 99
+    ]);
+
+    function validarTelefone(telefone) {
+
+        telefone = formataTelefone(telefone);
+
+        // IF para verificação do número de telefone se possui 10 ou 11 dígitos
+        if (telefone.length !== 10 && telefone.length !== 11)
+            return false;
+
+        // IF para validação de números repetidos, EX: (11)99999-9999
+        if (/^(\d)\1+$/.test(telefone))
+            return false;
+
+        //Váriavel criada para pegar o número DDD do telefone (2 primeiros)
+        const ddd = Number(telefone.substring(0, 2));
+
+        // IF para verificação do DDD, busca na váriavel criada anteriormente e analisa se existe.
+        if (!DDD_VALIDOS.has(ddd))
+            return false;
+
+        //Váriavel criada para pegar o primeiro dígito do telefone e verificar se é 9 (3° número digitado), baseado no padrão ANATEL
+        const numero = telefone.substring(2);
+
+        //IF feito para validar o 3° digito do número e verificar se é 9 
+        if (telefone.length === 11) {
+            if (numero[0] !== "9")
+                return false;
+        }
+
+        //IF feito para verificar se o número é um telefone fixo (Sem o dígito 9)
+        if (telefone.length === 10) {
+            if (!/[2-5]/.test(numero[0]))
+                return false;
+        }
+
+        return true;
+    }
+
     //Função para validação do CPF digitado
-    function validaCPF(cpf) {
+    function validarCpf(cpf) {
         var Soma = 0
         var Resto
 
@@ -92,8 +163,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const regexMercosul = /^[A-Z]{3}\d[A-J]\d{2}$/;
     const regexSenha = /^.{8,}$/; //faz com que a senha tenha no mínimo 8 caracteres
 
+    telefone.addEventListener("blur", () => {
+        confereTelefone();
+    });
+
+    telefone.addEventListener("focus", () => {
+        limparErroTelefone();
+    });
+
     cpf.addEventListener("blur", () => {
-        validarCpf();
+        confereCpf();
     });
 
     cpf.addEventListener("focus", () => {
@@ -135,6 +214,18 @@ document.addEventListener("DOMContentLoaded", function () {
         limparErroPlaca();
     });
 
+    function mostraErroTelefone(mensagem) {
+        erroTelefone.textContent = mensagem;
+        erroTelefone.style.display = "block";
+        telefone.classList.add("erro");
+    }
+
+    function limparErroTelefone() {
+        erroTelefone.textContent = "";
+        erroTelefone.style.display = "none";
+        telefone.classList.remove("erro");
+    }
+
     function mostraErroCpf(mensagem) {
         erroCpf.textContent = mensagem;
         erroCpf.style.display = "block";
@@ -147,7 +238,24 @@ document.addEventListener("DOMContentLoaded", function () {
         cpf.classList.remove("erro");
     }
 
-    function validarCpf() {
+    function confereTelefone() {
+        const telefoneDigitado = telefone.value.trim();
+
+        if (!telefoneDigitado) {
+            mostraErroTelefone("O telefone é obrigatório!");
+            return false;
+        }
+
+        if (!validarTelefone(telefoneDigitado)) {
+            mostraErroTelefone("Telefone inválido. Verifique e tente novamente.");
+            return false;
+        }
+
+        limparErroTelefone();
+        return true;
+    }
+
+    function confereCpf() {
         const cpfDigitado = cpf.value.trim();
 
         if (!cpfDigitado) {
@@ -155,7 +263,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return false;
         }
 
-        if (!validaCPF(cpfDigitado)) {
+        if (!validarCpf(cpfDigitado)) {
             mostraErroCpf("CPF inválido. Verifique e tente novamente.");
             return false;
         }
@@ -299,16 +407,17 @@ document.addEventListener("DOMContentLoaded", function () {
     form.addEventListener("submit", async function (e) {
         e.preventDefault();
         //Bloqueia o envio do formulário caso falte alguma informação.
-        if (!validaCPF || !validarPlaca() || !validarSenha() || !validarConfSenha()) {
+        if (!validarTelefone || !validarCpf || !validarPlaca() || !validarSenha() || !validarConfSenha()) {
             return;
         }
 
+        const telefoneSemFormato = document.getElementById("cadastro-telefone").value.replace(/\D/g, "");
         const cpfSemFormato = document.getElementById("cadastro-cpf").value.replace(/\D/g, "");
 
         const dados = {
             nome: document.getElementById("cadastro-nome").value,
             dataNascimento: document.getElementById("cadastro-data-nascimento").value,
-            telefone: document.getElementById("cadastro-telefone").value,
+            telefone: telefoneSemFormato,
             cpf: cpfSemFormato,
             marca: document.getElementById("cadastro-marca-carro").value,
             nomeCarro: document.getElementById("cadastro-nome-carro").value,
