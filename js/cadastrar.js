@@ -11,6 +11,12 @@ const cpf = document.getElementById("cadastro-cpf");
 const erroCpf = document.getElementById("erro-cpf");
 const telefone = document.getElementById("cadastro-telefone");
 const erroTelefone = document.getElementById("erro-telefone");
+const selectMarcaCarro = document.getElementById("select-dropdown-marcas");
+const selectNomeCarro = document.getElementById("select-dropdown-nomes")
+
+const URL_BASE_API = [
+    "http://localhost:8080"
+];
 
 function salvarNomeUsuario(nomeCompleto) {
     const primeiroNome = nomeCompleto.trim().split(/\s+/)[0];
@@ -48,6 +54,8 @@ cpf.addEventListener("input", function () {
 })
 
 document.addEventListener("DOMContentLoaded", function () {
+    carregarMarcasCarro();
+    carregarNomesCarros();
 
     //Váriavel para armazenagem de DDDs válidos para cada estado.
     const DDD_VALIDOS = new Set([
@@ -454,5 +462,152 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error(error);
         }
     });
-
 });
+
+async function carregarMarcasCarro() {
+    if (!selectMarcaCarro) {
+        return;
+    }
+
+    selectMarcaCarro.innerHTML = "<option value=''>Carregando marcas...</option>";
+
+    const endpointsMarcas = ["/marcas/lista-marca", "/marcas", "/marca", "/veiculos/marcas", "/carros/marcas"];
+
+    try {
+        const retorno = await buscarPrimeiroRetornoValido(endpointsMarcas);
+        const marcas = normalizarMarcas(retorno);
+
+        selectMarcaCarro.innerHTML = "<option value=''>Selecione a marca</option>";
+
+        if (marcas.length === 0) {
+            selectMarcaCarro.innerHTML += "<option value=''>Nenhuma marca cadastrada</option>";
+            return;
+        }
+
+        marcas.forEach((marca) => {
+            const option = document.createElement("option");
+            option.value = marca;
+            option.textContent = marca;
+            selectMarcaCarro.appendChild(option);
+        });
+    } catch (error) {
+        selectMarcaCarro.innerHTML = "<option value=''>Não foi possível carregar marcas</option>";
+        console.error("Erro ao buscar marcas:", error);
+    }
+}
+
+async function buscarPrimeiroRetornoValido(caminhos) {
+    let ultimoErro = null;
+
+    for (const baseUrl of URL_BASE_API) {
+        for (const caminho of caminhos) {
+            try {
+                const response = await fetch(`${baseUrl}${caminho}`);
+                if (!response.ok) {
+                    continue;
+                }
+
+                return await response.json();
+            } catch (error) {
+                ultimoErro = error;
+            }
+        }
+    }
+
+    throw ultimoErro || new Error("Nenhum endpoint de marcas retornou dados válidos.");
+}
+
+function normalizarMarcas(data) {
+    const marcasBrutas = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.marcas)
+            ? data.marcas
+            : [];
+
+    const marcasNormalizadas = marcasBrutas
+        .map((item) => {
+            if (typeof item === "string") {
+                return item.trim();
+            }
+
+            return String(item?.nome || item?.marca || item?.descricao || "").trim();
+        })
+        .filter(Boolean);
+
+    return [...new Set(marcasNormalizadas)].sort((a, b) => a.localeCompare(b, "pt-BR"));
+}
+
+async function carregarNomesCarros() {
+    if (!selectNomeCarro) {
+        return;
+    }
+
+    selectNomeCarro.innerHTML = "<option value=''>Carregando nomes...</option>";
+
+    const endpointsMarcas = ["/modelos", "/modelos/carros", "/modelos/carros?marcasId=${encodeURIComponent(marcaId)}"];
+
+    try {
+        const retorno = await buscarSegundoRetornoValido(endpointsMarcas);
+        const nomes = normalizarNomes(retorno);
+        
+            console.log("JSON recebido", retorno);
+
+        selectNomeCarro.innerHTML = "<option value=''>Selecione o nome</option>";
+
+        if (nomes.length === 0) {
+            selectNomeCarro.innerHTML += "<option value=''>Nenhum nome cadastrado</option>";
+            return;
+        }
+
+        nomes.forEach((nome) => {
+            const option = document.createElement("option");
+            option.value = nome;
+            option.textContent = nome;
+            selectNomeCarro.appendChild(option);
+        });
+    } catch (error) {
+        selectNomeCarro.innerHTML = "<option value=''>Não foi possível carregar nomes</option>";
+        console.error("Erro ao buscar nomes:", error);
+    }
+}
+
+async function buscarSegundoRetornoValido(caminhos) {
+    let ultimoErro = null;
+
+    for (const baseUrl of URL_BASE_API) {
+        for (const caminho of caminhos) {
+            try {
+                const response = await fetch(`${baseUrl}${caminho}`);
+                if (!response.ok) {
+                    continue;
+                }
+
+                return await response.json();
+            } catch (error) {
+                ultimoErro = error;
+            }
+        }
+    }
+
+    throw ultimoErro || new Error("Nenhum endpoint de nomes de carros retornou dados válidos.");
+}
+
+function normalizarNomes(data) {
+    const nomesBrutos = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.nomes)
+            ? data.nomes
+            : [];
+
+    const nomesNormalizados = nomesBrutos
+        .filter(item => {
+            return item?.ativo === 1 || item?.ativo === true;
+        })
+        .map(item => {
+                return String(item?.nome || "").trim();
+            })
+        .filter(nome => nome.length > 0);
+
+    return [...new Set(nomesNormalizados)].sort((a, b) => a.localeCompare(b, "pt-BR"));
+}
+

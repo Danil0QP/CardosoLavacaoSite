@@ -41,6 +41,18 @@ body{
     height: 15px;
 }
 
+.dropdown #select-dropdown {
+    width: 82%;
+    max-width: 160px;
+    height: 24px;
+}
+
+.dropdown #select-dropdown {
+    width: 82%;
+    max-width: 160px;
+    height: 24px;
+}
+
 input.erro {
     border: 2px solid red;
 }
@@ -117,3 +129,4 @@ input:checked+ .slider {
 input:checked+ .slider::before {
     transform: translateX(13px);
 }
+
