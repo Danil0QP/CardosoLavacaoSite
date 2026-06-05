@@ -47,12 +47,6 @@ body{
     height: 24px;
 }
 
-.dropdown #select-dropdown {
-    width: 82%;
-    max-width: 160px;
-    height: 24px;
-}
-
 input.erro {
     border: 2px solid red;
 }

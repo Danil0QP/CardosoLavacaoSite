@@ -28,12 +28,16 @@
             <small id="erro-cpf" style="color: red; display: none;"></small>
             <p>Marca:</p>
             <div class="dropdown">
-                <select id="select-dropdown-marcas" value="">Selecione a marca</select>
+                <select id="select-dropdown-marcas" required>
+                    <option value="">Carregando marcas...</option>
+                </select>
 
             </div>
             <p>Carro:</p>
             <div class="dropdown">
-                <select id="select-dropdown-nomes" value="">Selecione a marca</select>
+                <select id="select-dropdown-nomes" required disabled>
+                    <option value="">Selecione a marca primeiro</option>
+                </select>
             </div>
             <div class="switch-mercosul" id="placa">
                 <span>Mercosul:</span>

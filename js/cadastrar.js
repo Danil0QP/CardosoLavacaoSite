@@ -12,7 +12,7 @@ const erroCpf = document.getElementById("erro-cpf");
 const telefone = document.getElementById("cadastro-telefone");
 const erroTelefone = document.getElementById("erro-telefone");
 const selectMarcaCarro = document.getElementById("select-dropdown-marcas");
-const selectNomeCarro = document.getElementById("select-dropdown-nomes")
+const selectNomeCarro = document.getElementById("select-dropdown-nomes");
 
 const URL_BASE_API = [
     "http://localhost:8080"
@@ -55,7 +55,11 @@ cpf.addEventListener("input", function () {
 
 document.addEventListener("DOMContentLoaded", function () {
     carregarMarcasCarro();
-    carregarNomesCarros();
+    prepararSelectModelos();
+
+    selectMarcaCarro.addEventListener("change", () => {
+        carregarNomesCarrosPorMarca();
+    });
 
     //Váriavel para armazenagem de DDDs válidos para cada estado.
     const DDD_VALIDOS = new Set([
@@ -415,7 +419,7 @@ document.addEventListener("DOMContentLoaded", function () {
     form.addEventListener("submit", async function (e) {
         e.preventDefault();
         //Bloqueia o envio do formulário caso falte alguma informação.
-        if (!validarTelefone || !validarCpf || !validarPlaca() || !validarSenha() || !validarConfSenha()) {
+        if (!confereTelefone || !confereCpf || !validarPlaca() || !validarSenha() || !validarConfSenha() || !validarMarcaModelo()) {
             return;
         }
 
@@ -427,8 +431,8 @@ document.addEventListener("DOMContentLoaded", function () {
             dataNascimento: document.getElementById("cadastro-data-nascimento").value,
             telefone: telefoneSemFormato,
             cpf: cpfSemFormato,
-            marca: document.getElementById("cadastro-marca-carro").value,
-            nomeCarro: document.getElementById("cadastro-nome-carro").value,
+            marca: obterMarcaSelecionada()?.nome || "",
+            nomeCarro: obterModeloSelecionado()?.nome || "",
             mercosul: document.getElementById("switch-placa").checked,
             placa: document.getElementById("cadastro-placa-do-carro").value,
             senha: document.getElementById("cadastro-senha").value,
@@ -470,8 +474,10 @@ async function carregarMarcasCarro() {
     }
 
     selectMarcaCarro.innerHTML = "<option value=''>Carregando marcas...</option>";
+    selectMarcaCarro.disabled = true;
+    prepararSelectModelos();
 
-    const endpointsMarcas = ["/marcas/lista-marca", "/marcas", "/marca", "/veiculos/marcas", "/carros/marcas"];
+    const endpointsMarcas = ["/marcas", "/marca", "/marcas/lista-marca", "/veiculos/marcas", "/carros/marcas"];
 
     try {
         const retorno = await buscarPrimeiroRetornoValido(endpointsMarcas);
@@ -480,19 +486,22 @@ async function carregarMarcasCarro() {
         selectMarcaCarro.innerHTML = "<option value=''>Selecione a marca</option>";
 
         if (marcas.length === 0) {
-            selectMarcaCarro.innerHTML += "<option value=''>Nenhuma marca cadastrada</option>";
+            selectMarcaCarro.innerHTML = "<option value=''>Nenhuma marca cadastrada</option>";
             return;
         }
 
         marcas.forEach((marca) => {
             const option = document.createElement("option");
-            option.value = marca;
-            option.textContent = marca;
+            option.value = marca.id || marca.nome;
+            option.textContent = marca.nome;
+            option.dataset.id = marca.id || "";
             selectMarcaCarro.appendChild(option);
         });
     } catch (error) {
         selectMarcaCarro.innerHTML = "<option value=''>Não foi possível carregar marcas</option>";
         console.error("Erro ao buscar marcas:", error);
+    } finally {
+        selectMarcaCarro.disabled = false;
     }
 }
 
@@ -518,57 +527,100 @@ async function buscarPrimeiroRetornoValido(caminhos) {
 }
 
 function normalizarMarcas(data) {
-    const marcasBrutas = Array.isArray(data)
-        ? data
-        : Array.isArray(data?.marcas)
-            ? data.marcas
-            : [];
+    const marcasBrutas = extrairLista(data, ["marcas", "marca", "content", "dados", "data", "items", "results"]);
 
     const marcasNormalizadas = marcasBrutas
         .map((item) => {
             if (typeof item === "string") {
-                return item.trim();
+                const nome = item.trim();
+                return nome ? { id: nome, nome } : null;
             }
 
-            return String(item?.nome || item?.marca || item?.descricao || "").trim();
+            const nome = String(item?.nome || item?.marca || item?.descricao || item?.name || "").trim();
+            const id = String(item?.id || item?.marcaId || item?.marcasId || item?.codigo || nome || "").trim;
+
+            return nome ?{id, nome} : null;
         })
         .filter(Boolean);
 
-    return [...new Set(marcasNormalizadas)].sort((a, b) => a.localeCompare(b, "pt-BR"));
+    return removerDuplicadosPorNome(marcasNormalizadas)
+        .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
 }
 
-async function carregarNomesCarros() {
-    if (!selectNomeCarro) {
+function prepararSelectModelos(mensagem = "Selecione uma marca primeiro"){
+    if(!selectNomeCarro){
+        return;
+    }
+
+    selectNomeCarro.innerHTML = `<option value=''>${mensagem}</option>`;
+    selectNomeCarro.disabled = true;
+}
+
+async function carregarNomesCarrosPorMarca() {
+    const marcaSelecionada = obterMarcaSelecionada();
+
+    if (!marcaSelecionada) {
+        prepararSelectModelos();
+        return;
+    }
+
+    await carregarNomesCarros(marcaSelecionada);
+}
+
+async function carregarNomesCarros(marcaSelecionada){
+
+    if(!selectNomeCarro){
         return;
     }
 
     selectNomeCarro.innerHTML = "<option value=''>Carregando nomes...</option>";
+    selectNomeCarro.disabled = true;
 
-    const endpointsMarcas = ["/modelos", "/modelos/carros", "/modelos/carros?marcasId=${encodeURIComponent(marcaId)}"];
+    const endpointsModelos = montarEndpointsModelos(marcaSelecionada);
 
     try {
-        const retorno = await buscarSegundoRetornoValido(endpointsMarcas);
-        const nomes = normalizarNomes(retorno);
+        const retorno = await buscarSegundoRetornoValido(endpointsModelos);
+        const nomes = normalizarNomes(retorno, marcaSelecionada);
         
             console.log("JSON recebido", retorno);
 
         selectNomeCarro.innerHTML = "<option value=''>Selecione o nome</option>";
 
         if (nomes.length === 0) {
-            selectNomeCarro.innerHTML += "<option value=''>Nenhum nome cadastrado</option>";
+            selectNomeCarro.innerHTML = "<option value=''>Nenhum nome cadastrado</option>";
             return;
         }
 
         nomes.forEach((nome) => {
             const option = document.createElement("option");
-            option.value = nome;
-            option.textContent = nome;
+            option.value = nome.id || nome.nome;
+            option.textContent = nome.nome;
+            option.dataset.id = nome.id || "";
             selectNomeCarro.appendChild(option);
         });
+        selectNomeCarro.disabled = false;
     } catch (error) {
         selectNomeCarro.innerHTML = "<option value=''>Não foi possível carregar nomes</option>";
         console.error("Erro ao buscar nomes:", error);
     }
+}
+
+function montarEndpointsModelos(marcaSelecionada) {
+    const marcaId = encodeURIComponent(marcaSelecionada.id || marcaSelecionada.nome);
+    const marcaNome = encodeURIComponent(marcaSelecionada.nome);
+
+    return [
+        "/modelos",
+        "/modelos/carros",
+        `/modelos?marcasId=${marcaId}`,
+        `/modelos?marcaId=${marcaId}`,
+        `/modelos?marca=${marcaNome}`,
+        `/modelos/carros?marcasId=${marcaId}`,
+        `/modelos/carros?marcaId=${marcaId}`,
+        `/modelos/carros?marca=${marcaNome}`,
+        `/modelos/${marcaId}`,
+        `/modelos/carros/${marcaId}`
+    ];
 }
 
 async function buscarSegundoRetornoValido(caminhos) {
@@ -593,21 +645,140 @@ async function buscarSegundoRetornoValido(caminhos) {
 }
 
 function normalizarNomes(data) {
-    const nomesBrutos = Array.isArray(data)
-        ? data
-        : Array.isArray(data?.nomes)
-            ? data.nomes
-            : [];
+    const nomesBrutos = extrairLista(data, ["modelos", "nomes", "carros", "veiculos", "content", "dados", "data", "items", "results"]);
 
     const nomesNormalizados = nomesBrutos
-        .filter(item => {
-            return item?.ativo === 1 || item?.ativo === true;
-        })
-        .map(item => {
-                return String(item?.nome || "").trim();
-            })
-        .filter(nome => nome.length > 0);
+        .filter((item) => modeloEstaAtivo(item))
+        .filter((item) => modeloPertenceAMarca(item, marcaSelecionada))
+        .map((item) => {
+            if(typeof item === "string"){
+                const nome = item.trim();
+                return nome ? {id : nome, nome} : null;
+            }
 
-    return [...new Set(nomesNormalizados)].sort((a, b) => a.localeCompare(b, "pt-BR"));
+            const nome = String(item?.nome || item?.modelo || item?.nomeCarro || item?.descricao || item?.name || "").trim();
+            const id = String(item?.id || item?.modeloId || item?.codigo || nome || "").trim();
+
+                return nome ? {id : nome, nome} : null;
+            })
+        .filter(boolean);
+
+         return removerDuplicadosPorNome(nomesNormalizados)
+        .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+}
+
+function extrairLista(data, chavesPossiveis) {
+    if (Array.isArray(data)) {
+        return data;
+    }
+
+    for (const chave of chavesPossiveis) {
+        if (Array.isArray(data?.[chave])) {
+            return data[chave];
+        }
+    }
+
+    return [];
+}
+
+function modeloEstaAtivo(item) {
+    if (typeof item !== "object" || item === null || item.ativo === undefined) {
+        return true;
+    }
+
+    return item.ativo === 1 || item.ativo === true || item.ativo === "1";
+}
+
+function nomePertenceAMarca(item, marcaSelecionada) {
+    if (!marcaSelecionada || typeof item !== "object" || item === null) {
+        return true;
+    }
+
+    const marcaDoNome = item.marca || item.marcas || item.fabricante || item.brand;
+    const marcaIdDoNome = String(
+        item.marcaId ||
+        item.marcasId ||
+        item.idMarca ||
+        marcaDoNome?.id ||
+        marcaDoNome?.marcaId ||
+        marcaDoNome?.marcasId ||
+        ""
+    ).trim();
+    const marcaNomeDoModelo = String(
+        item.marcaNome ||
+        item.nomeMarca ||
+        marcaDoModelo?.nome ||
+        marcaDoModelo?.marca ||
+        (typeof marcaDoModelo === "string" ? marcaDoModelo : "") ||
+        ""
+    ).trim();
+
+    if (!marcaIdDoNome && !marcaNomeDoModelo) {
+        return true;
+    }
+
+    const marcaIdSelecionada = String(marcaSelecionada.id || "").trim();
+
+    return compararTexto(marcaIdDoNome, marcaIdSelecionada) || compararTexto(marcaNomeDoModelo, marcaSelecionada.nome);
+}
+
+function compararTexto(valorA, valorB) {
+    return String(valorA || "").trim().toLocaleLowerCase("pt-BR") === String(valorB || "").trim().toLocaleLowerCase("pt-BR");
+}
+
+function removerDuplicadosPorNome(itens) {
+    const nomes = new Set();
+
+    return itens.filter((item) => {
+        const chave = item.nome.toLocaleLowerCase("pt-BR");
+
+        if (nomes.has(chave)) {
+            return false;
+        }
+
+        nomes.add(chave);
+        return true;
+    });
+}
+
+function obterMarcaSelecionada() {
+    const option = selectMarcaCarro?.selectedOptions?.[0];
+
+    if (!option || !selectMarcaCarro.value) {
+        return null;
+    }
+
+    return {
+        id: option.dataset.id || selectMarcaCarro.value,
+        nome: option.dataset.nome || option.textContent.trim()
+    };
+}
+
+function obterNomeSelecionado() {
+    const option = selectNomeCarro?.selectedOptions?.[0];
+
+    if (!option || !selectNomeCarro.value) {
+        return null;
+    }
+
+    return {
+        id: option.dataset.id || selectNomeCarro.value,
+        nome: option.dataset.nome || option.textContent.trim()
+    };
+}
+
+function validarMarcaModelo() {
+    if (!obterMarcaSelecionada()) {
+        erroGeral.textContent = "Selecione uma marca.";
+        return false;
+    }
+
+    if (!obterNomeSelecionado()) {
+        erroGeral.textContent = "Selecione um nome.";
+        return false;
+    }
+
+    erroGeral.textContent = "";
+    return true;
 }
 
