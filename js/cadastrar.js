@@ -537,7 +537,7 @@ function normalizarMarcas(data) {
             }
 
             const nome = String(item?.nome || item?.marca || item?.descricao || item?.name || "").trim();
-            const id = String(item?.id || item?.marcaId || item?.marcasId || item?.codigo || nome || "").trim;
+            const id = String(item?.id || item?.marcaId || item?.marcasId || item?.codigo || nome || "").trim();
 
             return nome ?{id, nome} : null;
         })
@@ -644,12 +644,12 @@ async function buscarSegundoRetornoValido(caminhos) {
     throw ultimoErro || new Error("Nenhum endpoint de nomes de carros retornou dados válidos.");
 }
 
-function normalizarNomes(data) {
+function normalizarNomes(data, marcaSelecionada) {
     const nomesBrutos = extrairLista(data, ["modelos", "nomes", "carros", "veiculos", "content", "dados", "data", "items", "results"]);
 
     const nomesNormalizados = nomesBrutos
         .filter((item) => modeloEstaAtivo(item))
-        .filter((item) => modeloPertenceAMarca(item, marcaSelecionada))
+        .filter((item) => nomePertenceAMarca(item, marcaSelecionada))
         .map((item) => {
             if(typeof item === "string"){
                 const nome = item.trim();
@@ -661,7 +661,7 @@ function normalizarNomes(data) {
 
                 return nome ? {id : nome, nome} : null;
             })
-        .filter(boolean);
+        .filter(Boolean);
 
          return removerDuplicadosPorNome(nomesNormalizados)
         .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
@@ -707,9 +707,9 @@ function nomePertenceAMarca(item, marcaSelecionada) {
     const marcaNomeDoModelo = String(
         item.marcaNome ||
         item.nomeMarca ||
-        marcaDoModelo?.nome ||
-        marcaDoModelo?.marca ||
-        (typeof marcaDoModelo === "string" ? marcaDoModelo : "") ||
+        marcaDoNome?.nome ||
+        marcaDoNome?.marca ||
+        (typeof marcaDoNome === "string" ? marcaDoNome : "") ||
         ""
     ).trim();
 
