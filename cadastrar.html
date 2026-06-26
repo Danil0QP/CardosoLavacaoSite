@@ -17,14 +17,14 @@
             <h1>Seja bem-vindo</h1>
             <h2>Criar cadastro!</h2>
             <p>Nome:</p>
-            <input type="text" id="cadastro-nome" placeholder="Ex: Seu nome completo">
+            <input type="text" id="cadastro-nome" placeholder="Ex: Seu nome completo" required>
             <p>Data de Nascimento</p>
-            <input type="date" id="cadastro-data-nascimento" placeholder="Ex: DD/MM/AAAA">
+            <input type="date" id="cadastro-data-nascimento" placeholder="Ex: DD/MM/AAAA" required>
             <p>Número de Telefone:</p>
-            <input type="tel" id="cadastro-telefone" placeholder="Ex: (48)9 9999-9999">
+            <input type="tel" id="cadastro-telefone" placeholder="Ex: (48)9 9999-9999" required>
             <small id="erro-telefone" style="color: red; display: none;"></small>
             <p>CPF:</p>
-            <input type="text" id="cadastro-cpf" maxlength="14" placeholder="Ex: 123.456.789-00">
+            <input type="text" id="cadastro-cpf" maxlength="14" placeholder="Ex: 123.456.789-00" required>
             <small id="erro-cpf" style="color: red; display: none;"></small>
             <p>Marca:</p>
             <div class="dropdown">
@@ -47,14 +47,14 @@
                 </label>
             </div>
             <p>Placa:</p>
-            <input type="text" id="cadastro-placa-do-carro" aria-describedby="erro-placa">
+            <input type="text" id="cadastro-placa-do-carro" aria-describedby="erro-placa" required>
             <small id="erro-placa" style="color:red; display: none;"></small>
             <p>Senha:</p>
             <input type="password" id="cadastro-senha" placeholder="Insira sua senha aqui." autocomplete="new-password"
                 required minlength="8">
             <small id="erro-senha" style="color: red; display: none;"></small>
             <p>Confirmar sua senha</p>
-            <input type="password" id="confirma-senha" placeholder="Insira a senha novamente.">
+            <input type="password" id="confirma-senha" placeholder="Insira a senha novamente." required>
             <small id="erro-confirma-senha" style="color: red; display: none;"></small>
             <button type="submit" id="botao-acesso">Criar</button>
             <p class="acessar-conta">Já possui uma conta? <a href="/login.html">Acessar conta</a></p>

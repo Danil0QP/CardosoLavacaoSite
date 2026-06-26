@@ -1,4 +1,6 @@
 const form = document.getElementById("form-cadastro");
+const cadastroNome = document.getElementById("cadastro-nome");
+const cadastroDataNascimento = document.getElementById("cadastro-data-nascimento");
 const switchPlaca = document.getElementById("switch-placa");
 const cadastroPlaca = document.getElementById("cadastro-placa-do-carro");
 const erroPlaca = document.getElementById("erro-placa");
@@ -77,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function validarTelefone(telefone) {
 
-        telefone = formataTelefone(telefone);
+        telefone = String (telefone).replace(/\D/g,"");
 
         // IF para verificação do número de telefone se possui 10 ou 11 dígitos
         if (telefone.length !== 10 && telefone.length !== 11)
@@ -139,7 +141,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return false
 
         //FOR feito para verificar o digito verificador do CPF se é válido
-        for (i = 1; i <= 9; i++)
+        for (let i = 1; i <= 9; i++)
             Soma = Soma + parseInt(strCPF.substring(i - 1, i)) * (11 - i);
 
         Resto = (Soma * 10) % 11
@@ -155,7 +157,7 @@ document.addEventListener("DOMContentLoaded", function () {
         Soma = 0
 
         //Verificação para caso o Dígito passe nas verificações anteriores, Aqui verifica o dígito 11 do CPF
-        for (i = 1; i <= 10; i++)
+        for (let i = 1; i <= 10; i++)
             Soma = Soma + parseInt(strCPF.substring(i - 1, i)) * (12 - i)
 
         Resto = (Soma * 10) % 11
@@ -415,11 +417,44 @@ document.addEventListener("DOMContentLoaded", function () {
         return true;
     }
 
+    function validarDadosObrigatorios() {
+        if (!cadastroNome.value.trim()) {
+            erroGeral.textContent = "Informe seu nome completo.";
+            cadastroNome.focus();
+            return false;
+        }
+
+        if (!cadastroDataNascimento.value) {
+            erroGeral.textContent = "Informe sua data de nascimento.";
+            cadastroDataNascimento.focus();
+            return false;
+        }
+
+        erroGeral.textContent = "";
+        return true;
+    }
+
+    async function obterMensagemErro(response) {
+        const texto = await response.text();
+
+        if (!texto) {
+            return `Erro ${response.status} ao criar cadastro.`;
+        }
+
+        try {
+            const erro = JSON.parse(texto);
+            return erro.message || erro.error || texto;
+        } catch (_) {
+            return texto;
+        }
+    }
+
+
     //Bloqueio e envio do formulário para o backend
     form.addEventListener("submit", async function (e) {
         e.preventDefault();
         //Bloqueia o envio do formulário caso falte alguma informação.
-        if (!confereTelefone || !confereCpf || !validarPlaca() || !validarSenha() || !validarConfSenha() || !validarMarcaModelo()) {
+        if (!validarDadosObrigatorios() || !confereTelefone() || !confereCpf() || !validarPlaca() || !validarSenha() || !validarConfSenha() || !validarMarcaModelo()) {
             return;
         }
 
@@ -427,12 +462,12 @@ document.addEventListener("DOMContentLoaded", function () {
         const cpfSemFormato = document.getElementById("cadastro-cpf").value.replace(/\D/g, "");
 
         const dados = {
-            nome: document.getElementById("cadastro-nome").value,
-            dataNascimento: document.getElementById("cadastro-data-nascimento").value,
+            nome: cadastroNome.value.trim(),
+            dataNascimento: cadastroDataNascimento.value,
             telefone: telefoneSemFormato,
             cpf: cpfSemFormato,
             marca: obterMarcaSelecionada()?.nome || "",
-            nomeCarro: obterModeloSelecionado()?.nome || "",
+            nomeCarro: obterNomeSelecionado()?.nome || "",
             mercosul: document.getElementById("switch-placa").checked,
             placa: document.getElementById("cadastro-placa-do-carro").value,
             senha: document.getElementById("cadastro-senha").value,
@@ -449,9 +484,9 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             if (!response.ok) {
-                const texto = await response.text();
-                console.error("Erro: ", response.status, texto);
-                throw new Error("Erro na requisição");
+                const mensagemErro = await obterMensagemErro(response);
+                console.error("Erro: ", response.status, mensagemErro);
+                throw new Error(mensagemErro);
             }
 
             const resultado = await response.json();
@@ -462,7 +497,7 @@ document.addEventListener("DOMContentLoaded", function () {
             window.location.href = "index.html"
 
         } catch (error) {
-            erroGeral.textContent = "Erro ao conectar ao servidor!";
+            erroGeral.textContent = error.message || "Erro ao conectar ao servidor!";
             console.error(error);
         }
     });
