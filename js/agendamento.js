@@ -21,6 +21,10 @@ const SERVICOS_POR_PLANO = {
 
 let listaCompletaAgendamento = [];
 
+const HORARIOS_DISPONIVEIS = [
+    "08:00", "09:00", "10:00", "11:00", "13:00", "14:00", "15:00", "16:00", "17:00"
+]
+
 document.addEventListener("DOMContentLoaded", () => {
     configurarFormularioAgendamento();
     configurarFiltros();
@@ -31,14 +35,20 @@ async function configurarFormularioAgendamento() {
     const selectCarro = document.getElementById("opcao-carro");
     const selectPlano = document.getElementById("opcao-plano");
     const selectServico = document.getElementById("opcao-servico");
+    const selectData = document.getElementById("data");
+    const selectHora = document.getElementById("hora")
     const botaoAgendar = document.getElementById("confirmaAgendamento");
     const botaoCancelar = document.getElementById("cancelaAgendamento");
 
-    if (!selectCarro || !selectPlano || !selectServico || !botaoAgendar || !botaoCancelar) {
+    if (!selectCarro || !selectPlano || !selectServico || !selectData || !selectHora || !botaoAgendar || !botaoCancelar) {
         return;
     }
 
     await popularCarrosCliente(selectCarro);
+    await atualizarHorarioDisponiveis(selectData.value, selectHora);
+    selectData.addEventListener("change", async () => {
+        await atualizarHorarioDisponiveis(selectData.value, selectHora);
+    });
     normalizarOpcoesPlano(selectPlano);
 
     selectPlano.addEventListener("change", () => {
@@ -60,11 +70,13 @@ async function configurarFormularioAgendamento() {
 
         alert("Agendamento criado com sucesso!");
         limparFormularioAgendamento(selectPlano, selectServico);
+        await atualizarHorarioDisponiveis(selectData.value, selectHora);
         carregarAgendamentos();
     });
 
     botaoCancelar.addEventListener("click", () => {
         limparFormularioAgendamento(selectPlano, selectServico, true);
+        atualizarHorarioDisponiveis("", selectHora);
     });
 }
 
@@ -141,7 +153,7 @@ async function popularCarrosCliente(selectCarro) {
         veiculos.forEach((veiculo) => {
             const descricao = [veiculo.marca, veiculo.nomeCarro, veiculo.placa].filter(Boolean).join(" • ");
             const option = document.createElement("option");
-            option.value = descricao;
+            option.value = veiculo.id || descricao;
             option.textContent = descricao || "Veículo sem descrição";
             selectCarro.appendChild(option);
         });
@@ -198,10 +210,61 @@ function normalizarVeiculosCliente(data) {
 
 function mapearVeiculo(item = {}) {
     return {
+        id: item.id || item.veiculoId || item.idVeiculo || "",
         marca: item.marca || item.marcaCarro || "",
         nomeCarro: item.nomeCarro || item.carro || item.modelo || "",
         placa: item.placa || item.placaCarro || ""
     };
+}
+
+async function atualizarHorarioDisponiveis(dataSelecionada, selectHora){
+    selectHora.innerHTML = "<option value=''>Escolha um horário...</option>";
+
+    if(!dataSelecionada){
+        return;
+    }
+
+    const horariosOcupados = await buscarHorariosOcupados (dataSelecionada);
+    const horariosLivres = HORARIOS_DISPONIVEIS.filter((horario) => !horariosOcupados.has(normalizarHora(horario)));
+
+    if(horariosLivres.length === 0){
+        selectHora.innerHTML = "<option value=''>Nenhum horário disponível nesta data...</option>";
+        return;
+    }
+
+    horariosLivres.forEach((horario) => {
+        const option = document.createElement("option");
+        option.value = horario;
+        option.textContent = horario;
+        selectHora.appendChild(option);
+    });
+}
+
+async function buscarHorariosOcupados(dataSelecionada){
+    const rotas = [
+        `/agendamentos?dia=${encodeURIComponent(dataSelecionada)}`,
+        `/agendamento?dia=${encodeURIComponent(dataSelecionada)}`,
+        "/listarAgendamentos",
+        "/agendamento"
+    ];
+
+    try {
+        const agendamentos = await buscarEmEndpoints(rotas);
+        return new Set(
+            agendamentos.filter((agendamento) => agendamento.dia === dataSelecionada && !isAgendamentoCancelado(agendamento)).map((agendamento) => normalizarHora(agendamento.hora)).filter(Boolean)
+        );
+    }catch(error){
+        const pendentes = JSON.parse(localStorage.getItem("agendamentosPendentes") || "[]");
+        return new Set(pendentes.filter((agendamento) => agendamento.dia === dataSelecionada && !isAgendamentoCancelado(agendamento)).map((agendamento) => normalizaHora(agendamento.hora)).filter(Boolean));
+    }
+}
+
+function normalizarHora(hora = ""){
+    return String(hora).slice(0,5);
+}
+
+function isAgendamentoCancelado(agendamento = {}) {
+    return String(agendamento.statusAgendamento || agendamento.status || "").toUpperCase() === "CANCELADO";
 }
 
 function popularServicosPorPlano(plano, selectServico) {

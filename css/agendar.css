@@ -19,6 +19,58 @@
     gap: 10px;
 }
 
+#agendar-horario {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: min(100% - 32px, 920px);
+    margin: 70px auto 40px;
+    text-align: center;
+}
 
+#agendar-horario h1 {
+    margin-bottom: 24px;
+}
+
+.agendamento-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    justify-items: stretch;
+    align-items: center;
+    width: 100%;
+}
+
+.agendamento-form select,
+.agendamento-form input {
+    width: 100%;
+    min-height: 42px;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+}
+
+.agendamento-form .buttons {
+    grid-column: 1 / -1;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 576px) {
+    #agendar-horario {
+        width: min(100% - 24px, 920px);
+        margin-top: 45px;
+    }
+
+    .agendamento-form {
+        grid-template-columns: 1fr;
+    }
+
+    .agendamento-form .buttons {
+        display: grid;
+        grid-template-columns: 1fr;
+        width: 100%;
+    }
+}
 
 
